@@ -1,0 +1,8 @@
+[test-server]
+192.168.123.215
+192.168.123.61
+
+# 定义test-server组列表参数,供roles模块调用变量
+[test-server:vars]
+GO_SOURCE_DOWNLOAD_URL=https://studygolang.com/dl/golang/go1.13.4.linux-amd64.tar.gz
+GO_PATH=/usr/local/gopath

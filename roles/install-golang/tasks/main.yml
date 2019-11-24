@@ -1,0 +1,66 @@
+- name: 检查安装文件是否存在
+  stat: path="/tmp/golang.tar.gz"
+  register: go_file_result
+#- debug: var=go_file_result
+
+- name: 检查go 安装目录是否存在
+  file: path=/usr/local/go state=directory
+  register: go_bin_result
+  when: not go_file_result.stat.exists
+
+# 下载安装
+- name: 下载golang安装包
+  get_url:
+    url: "{{ GO_SOURCE_DOWNLOAD_URL }}"
+    dest: "/tmp/golang.tar.gz"
+    validate_certs: false
+  when: not go_file_result.stat.exists
+  register: download_go_file_result
+#- debug: var=download_go_file_result
+
+- name: 安装golang
+  shell: "rm -rf /usr/local/go && tar xzvf /tmp/golang.tar.gz -C /usr/local/"
+  register: go_file_result
+#  check_mode: no
+#- debug: var=go_file_result
+
+- name: 清除安装包
+  shell: "rm -rf /tmp/golang.tar.gz"
+
+- name: 生成 gopath 目录
+  shell: "mkdir -p {{GO_PATH}}"
+
+# 清除环境变量（貌似没必要，留着做regexp参考）
+#- name: 清除环境变量
+#  lineinfile: dest=/etc/profile regexp="{item}" line=""
+#  with_items:
+#    - '^export GOROOT='
+#    - '^export GOPATH='
+#    - '^export PATH=\$PATH:.*\$GO(PATH|ROOT).*'
+
+- name: 设置环境变量1
+  lineinfile: dest=/etc/profile line='{{ item }}'
+  with_items:
+    - 'export GOROOT=/usr/local/go'
+    - 'export GOPATH={{GO_PATH}}'
+    - 'export PATH=$PATH:$GOROOT/bin'
+- name: source profile
+  shell: source /etc/profile
+
+# 设置环境变量-2
+# 一般SSH用户登录执行的是login shell，会加载/etc/profile和~/.bash_profile；
+# ansible这类ssh远程执行是non-login shell，不会加载etc/profile和~/.bash_profile,
+# 而是会去加载/etc/bashrc和~/.bashrc，所以之前的脚本会出现找不到go命令错误
+- name: 设置环境变量2
+  lineinfile: dest=/etc/bashrc line='{{ item }}'
+  with_items:
+    - 'export GOROOT=/usr/local/go'
+    - 'export GOPATH={{GO_PATH}}'
+    - 'export PATH=$PATH:$GOROOT/bin'
+- name: source /etc/bashrc
+  shell: source /etc/profile
+
+- name: 检测安装是否成功
+  shell: go version
+  register: install_result
+- debug: var=install_result
