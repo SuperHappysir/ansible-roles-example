@@ -21,7 +21,8 @@ cd /etc/ansible/
 vim roles/install-golang/demo/group_vars/install-golang-env
 
 # 使用角色install-golang下定义的demo变量和剧本进行go环境安装
-ansible-playbook -i roles/install-golang/demo/group_vars/install-golang-env roles/install-golang/demo/install-golang.yml
+copy roles/install-golang/demo/install-golang.yml install-golang.yml 
+ansible-playbook -i roles/install-golang/demo/group_vars/install-golang-env install-golang.yml
 ```
 
 ### 自己编写剧本调用role

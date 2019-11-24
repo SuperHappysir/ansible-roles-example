@@ -3,8 +3,3 @@
   # roles：需要执行的role任务清单
   roles:
     - install-golang
-
-#
-# cd /etc/ansible
-# ansible-playbook -i group_vars/install-golang-env ./install-golang.yml
-#
