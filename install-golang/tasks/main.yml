@@ -59,8 +59,3 @@
     - 'export PATH=$PATH:$GOROOT/bin'
 - name: source /etc/bashrc
   shell: source /etc/profile
-
-- name: 检测安装是否成功
-  shell: go version
-  register: install_result
-- debug: var=install_result
