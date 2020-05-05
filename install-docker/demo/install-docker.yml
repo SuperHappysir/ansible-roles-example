@@ -1,0 +1,5 @@
+- hosts: "webserver"
+  remote_user: root # 以root用户操作
+  # roles：需要执行的role任务清单
+  roles:
+    - install-docker

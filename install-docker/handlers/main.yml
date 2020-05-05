@@ -1,0 +1,4 @@
+---
+# handlers file for install_docker-ce
+- include: yum-clean-metadata.yml
+- include: yum-makecache.yml
